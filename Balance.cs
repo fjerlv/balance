@@ -125,7 +125,7 @@ public class Balance : BasePlugin
                 pawn.Health = calculatedHealth;
                 Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iMaxHealth");
                 Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iHealth");
-                var color = PlayerColorHash.GetColor(player.PlayerName);
+                var color = player.Team == CsTeam.CounterTerrorist ? ChatColors.Blue : ChatColors.Yellow;
                 var healthColor = calculatedHealth > 100 ? $"{ChatColors.Green}" : "";
                 var healthReset = calculatedHealth > 100 ? $"{ChatColors.Default}" : "";
                 PrintToAllChat($"[{color}{player.PlayerName}{ChatColors.Default}] health: {healthColor}{calculatedHealth}{healthReset}, kills: {kills}, deaths: {deaths}, difference: {-difference}");
