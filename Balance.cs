@@ -1,33 +1,30 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace Balance;
 
 public static class HealthCalculator
 {
     private const int BaseHealth = 100;
-    private const int HealthPerDeathDeficit = 20;
-    private const int HealthPerKillSurplus = 10;
-    private const int MinHealth = 10;
+    private const int PlusHealthPerDeath = 20;
 
     public static int CalculateHealth(int kills, int deaths)
     {
         var difference = deaths - kills;
-        var calculatedHealth = difference switch
+        return difference switch
         {
-            > 0 => BaseHealth + difference * HealthPerDeathDeficit,
-            < 0 => BaseHealth + difference * HealthPerKillSurplus,
+            > 0 => BaseHealth + difference * PlusHealthPerDeath,
             _ => BaseHealth
         };
-
-        return Math.Max(calculatedHealth, MinHealth);
     }
 }
 
 public class Balance : BasePlugin
 {
     public override string ModuleName => "Balance";
-    public override string ModuleVersion => "0.0.2";
+    public override string ModuleVersion => "0.0.3";
 
     private readonly Dictionary<ulong, int> _playerKills = new();
     private readonly Dictionary<ulong, int> _playerDeaths = new();
@@ -39,19 +36,15 @@ public class Balance : BasePlugin
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
         RegisterEventHandler<EventGameEnd>(OnGameEnd);
-        RegisterEventHandler<EventBeginNewMatch>(OnBeginNewMatch);
         RegisterEventHandler<EventWarmupEnd>(OnWarmupEnd);
+        RegisterEventHandler<EventCsWinPanelMatch>(OnCsWinPanelMatch);
+        AddCommandListener("mp_warmup_end", OnWarmupEndCommand);
+        AddCommandListener("mp_restartgame", OnRestartGameCommand);
     }
     
     private HookResult OnGameEnd(EventGameEnd @event, GameEventInfo info)
     {
         ClearPlayerStats("game end");
-        return HookResult.Continue;
-    }
-
-    private HookResult OnBeginNewMatch(EventBeginNewMatch @event, GameEventInfo info)
-    {
-        ClearPlayerStats("new match");
         return HookResult.Continue;
     }
 
@@ -61,11 +54,29 @@ public class Balance : BasePlugin
         return HookResult.Continue;
     }
 
+    private HookResult OnWarmupEndCommand(CCSPlayerController? player, CommandInfo info)
+    {
+        ClearPlayerStats("warmup end (manual)");
+        return HookResult.Continue;
+    }
+
+    private HookResult OnRestartGameCommand(CCSPlayerController? player, CommandInfo info)
+    {
+        ClearPlayerStats("restart game");
+        return HookResult.Continue;
+    }
+
+    private HookResult OnCsWinPanelMatch(EventCsWinPanelMatch @event, GameEventInfo info)
+    {
+        ClearPlayerStats("win panel match");
+        return HookResult.Continue;
+    }
+
     private void ClearPlayerStats(string reason)
     {
         _playerKills.Clear();
         _playerDeaths.Clear();
-        Console.WriteLine($"[Balance] Player stats cleared at {reason}.");
+        PrintToAllChat($"Player stats cleared at {reason}.");
     }
     
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -84,8 +95,9 @@ public class Balance : BasePlugin
             {
                 pawn.MaxHealth = calculatedHealth;
                 pawn.Health = calculatedHealth;
+                Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iMaxHealth");
                 Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iHealth");
-                player.PrintToChat($"[Balance] [{player.PlayerName}] health: {calculatedHealth}, kills: {kills}, deaths: {deaths}, difference: {difference}");
+                PrintToAllChat($"[{player.PlayerName}] health: {calculatedHealth}, kills: {kills}, deaths: {deaths}, difference: {-difference}");
             }
         }
         return HookResult.Continue;
@@ -122,5 +134,10 @@ public class Balance : BasePlugin
     {
         stats.TryGetValue(steamId, out var current);
         stats[steamId] = current + 1;
+    }
+
+    private static void PrintToAllChat(string message)
+    {
+        Server.PrintToChatAll($" {ChatColors.Green}[Balance]{ChatColors.Default} {message}");
     }
 }
