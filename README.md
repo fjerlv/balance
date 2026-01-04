@@ -6,10 +6,17 @@ A Counter-Strike 2 plugin that dynamically adjusts player health based on kill/d
 
 At the start of each round, player health is adjusted:
 - Players with more deaths than kills get bonus health (+20 HP per death deficit)
-- Players with more kills than deaths get reduced health (-10 HP per kill surplus)
-- Minimum health is capped at 10 HP
+- Players with more kills than deaths keep normal health (100 HP)
 
-Stats are automatically cleared on game end, new match, and warmup end.
+Health changes are broadcast to all players in chat with a green [Balance] prefix.
+
+Stats are automatically cleared on:
+- Game end
+- Warmup end (event and manual `mp_warmup_end` command)
+- Win panel match
+- Game restart (`mp_restartgame` command)
+
+Player stats are also cleaned up when they disconnect.
 
 ## Requirements
 
