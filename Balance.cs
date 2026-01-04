@@ -31,7 +31,7 @@ public class Balance : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        PrintToAllChat("Plugin loaded!");
+        Console.WriteLine("Balance plugin loaded!");
         RegisterEventHandler<EventRoundStart>(OnRoundStart);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
