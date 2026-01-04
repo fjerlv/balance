@@ -21,6 +21,34 @@ public static class HealthCalculator
     }
 }
 
+public static class PlayerColorHash
+{
+    private static readonly char[] Colors =
+    [
+        ChatColors.Purple,
+        ChatColors.Gold,
+        ChatColors.LightBlue,
+        ChatColors.Red,
+        ChatColors.Olive,
+        ChatColors.Magenta,
+        ChatColors.Yellow,
+        ChatColors.Blue,
+        ChatColors.LightRed,
+        ChatColors.Green,
+        ChatColors.BlueGrey,
+        ChatColors.Orange,
+        ChatColors.Lime,
+        ChatColors.LightPurple
+    ];
+
+    public static char GetColor(string playerName)
+    {
+        var hash = playerName.Aggregate(0, (current, c) => current * 31 + c);
+        var index = Math.Abs(hash) % Colors.Length;
+        return Colors[index];
+    }
+}
+
 public class Balance : BasePlugin
 {
     public override string ModuleName => "Balance";
@@ -97,7 +125,10 @@ public class Balance : BasePlugin
                 pawn.Health = calculatedHealth;
                 Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iMaxHealth");
                 Utilities.SetStateChanged(pawn, "CBaseEntity", "m_iHealth");
-                PrintToAllChat($"[{player.PlayerName}] health: {calculatedHealth}, kills: {kills}, deaths: {deaths}, difference: {-difference}");
+                var color = PlayerColorHash.GetColor(player.PlayerName);
+                var healthColor = calculatedHealth > 100 ? $"{ChatColors.Green}" : "";
+                var healthReset = calculatedHealth > 100 ? $"{ChatColors.Default}" : "";
+                PrintToAllChat($"[{color}{player.PlayerName}{ChatColors.Default}] health: {healthColor}{calculatedHealth}{healthReset}, kills: {kills}, deaths: {deaths}, difference: {-difference}");
             }
         }
         return HookResult.Continue;
@@ -138,6 +169,6 @@ public class Balance : BasePlugin
 
     private static void PrintToAllChat(string message)
     {
-        Server.PrintToChatAll($" {ChatColors.Green}[Balance]{ChatColors.Default} {message}");
+        Server.PrintToChatAll($" {ChatColors.Silver}[Balance]{ChatColors.Default} {message}");
     }
 }
