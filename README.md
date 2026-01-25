@@ -7,6 +7,7 @@ A Counter-Strike 2 plugin that dynamically adjusts player health based on kill/d
 At the start of each round, player health is adjusted:
 - Players with more deaths than kills get bonus health (+20 HP per death deficit)
 - Players with more kills than deaths keep normal health (100 HP)
+- Health bonuses are skipped on pistol rounds (first round and first round after halftime)
 
 Health changes are broadcast to all players in chat with a green [Balance] prefix.
 
