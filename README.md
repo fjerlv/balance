@@ -21,7 +21,7 @@ Player stats are also cleaned up when they disconnect.
 
 ## Requirements
 
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp)
 
 ## Build
@@ -30,7 +30,7 @@ Player stats are also cleaned up when they disconnect.
 dotnet build
 ```
 
-The compiled plugin will be in `bin/Debug/net8.0/`.
+The compiled plugin will be in `bin/Debug/net10.0/`.
 
 ## Running Tests
 
