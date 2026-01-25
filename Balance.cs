@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace Balance;
@@ -81,6 +82,11 @@ public class Balance : BasePlugin
     
     private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
+        if (IsPistolRound())
+        {
+            return HookResult.Continue;
+        }
+
         var players = Utilities.GetPlayers();
         foreach (var player in players.Where(p => p is { IsValid: true, PawnIsAlive: true }))
         {
@@ -112,6 +118,20 @@ public class Balance : BasePlugin
             }
         }
         return HookResult.Continue;
+    }
+
+    private static bool IsPistolRound()
+    {
+        var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules")
+            .FirstOrDefault()?.GameRules;
+
+        if (gameRules == null) return false;
+
+        var totalRoundsPlayed = gameRules.TotalRoundsPlayed;
+        var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 24;
+        var halfTimeRound = maxRounds / 2;
+
+        return totalRoundsPlayed == 0 || totalRoundsPlayed == halfTimeRound;
     }
 
     private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
