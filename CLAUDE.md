@@ -11,12 +11,20 @@ dotnet build
 dotnet test
 ```
 
+To run tests with detailed output:
+
+```bash
+dotnet test --logger "console;verbosity=detailed"
+```
+
+Tests are located in `Balance.Tests/` and use xUnit. New tests should be added for any new functionality.
+
 ## Version Management
 
 When making a commit, increment `ModuleVersion` in `Balance.cs` (line 27):
 
 ```csharp
-public override string ModuleVersion => "0.0.3";
+public override string ModuleVersion => "0.0.4";
 ```
 
 Use semantic versioning (MAJOR.MINOR.PATCH). Increment the patch version for small changes.

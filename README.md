@@ -32,6 +32,22 @@ dotnet build
 
 The compiled plugin will be in `bin/Debug/net8.0/`.
 
+## Running Tests
+
+Run all tests:
+
+```bash
+dotnet test
+```
+
+Run tests with detailed output:
+
+```bash
+dotnet test --logger "console;verbosity=detailed"
+```
+
+The test suite includes tests for the `HealthCalculator` class which handles the health bonus calculations.
+
 ## Installation
 
 1. Build the plugin

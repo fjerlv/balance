@@ -25,7 +25,7 @@ public static class HealthCalculator
 public class Balance : BasePlugin
 {
     public override string ModuleName => "Balance";
-    public override string ModuleVersion => "0.0.3";
+    public override string ModuleVersion => "0.0.4";
 
     private readonly Dictionary<ulong, int> _playerKills = new();
     private readonly Dictionary<ulong, int> _playerDeaths = new();
