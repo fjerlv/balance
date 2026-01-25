@@ -1,6 +1,6 @@
 # Balance
 
-A Counter-Strike 2 plugin that dynamically adjusts player health based on kill/death difference.
+A Counter Strike 2 plugin for balancing health based on kills and deaths.
 
 ## How It Works
 
