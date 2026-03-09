@@ -4,10 +4,19 @@ A Counter Strike 2 plugin for balancing health based on kills and deaths.
 
 ## How It Works
 
-At the start of each round, player health is adjusted:
-- Players with more deaths than kills get bonus health (+20 HP per death deficit)
-- Players with more kills than deaths keep normal health (100 HP)
-- Health bonuses are skipped on pistol rounds (first round and first round after halftime)
+At the start of each round, player health is adjusted based on two factors:
+
+**Team size bonus:** If your team has fewer players than the opposition, 100 HP is distributed per missing player divided among your team.
+- Example: 1v2 (1 missing) → +100 HP each
+- Example: 2v3 (1 missing) → +50 HP each
+- Example: 3v5 (2 missing) → +66 HP each
+
+**Performance bonus:** Players with more deaths than kills receive +20 HP per death deficit.
+- Example: 2 kills, 5 deaths → +60 HP
+
+Both bonuses stack. Players with more kills than deaths and on the larger (or equal) team keep normal health (100 HP).
+
+Health bonuses are skipped on pistol rounds (first round and first round after halftime).
 
 Health changes are broadcast to all players in chat with a green [Balance] prefix.
 

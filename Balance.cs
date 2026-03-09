@@ -11,21 +11,18 @@ public static class HealthCalculator
     private const int BaseHealth = 100;
     private const int PlusHealthPerDeath = 20;
 
-    public static int CalculateHealth(int kills, int deaths)
+    public static int CalculateHealth(int kills, int deaths, int myTeamCount, int opponentCount)
     {
-        var difference = deaths - kills;
-        return difference switch
-        {
-            > 0 => BaseHealth + difference * PlusHealthPerDeath,
-            _ => BaseHealth
-        };
+        var teamBonus = myTeamCount > 0 ? Math.Max(0, opponentCount - myTeamCount) * 100 / myTeamCount : 0;
+        var performanceBonus = Math.Max(0, deaths - kills) * PlusHealthPerDeath;
+        return BaseHealth + teamBonus + performanceBonus;
     }
 }
 
 public class Balance : BasePlugin
 {
     public override string ModuleName => "Balance";
-    public override string ModuleVersion => "0.0.6";
+    public override string ModuleVersion => "0.0.7";
 
     private readonly Dictionary<ulong, int> _playerKills = new();
     private readonly Dictionary<ulong, int> _playerDeaths = new();
@@ -90,12 +87,18 @@ public class Balance : BasePlugin
         }
 
         var players = Utilities.GetPlayers();
-        foreach (var player in players.Where(p => p is { IsValid: true, PawnIsAlive: true }))
+        var alivePlayers = players.Where(p => p is { IsValid: true, PawnIsAlive: true }).ToList();
+        var tCount = alivePlayers.Count(p => p.Team == CsTeam.Terrorist);
+        var ctCount = alivePlayers.Count(p => p.Team == CsTeam.CounterTerrorist);
+
+        foreach (var player in alivePlayers)
         {
             _playerKills.TryGetValue(player.SteamID, out var kills);
             _playerDeaths.TryGetValue(player.SteamID, out var deaths);
 
-            var calculatedHealth = HealthCalculator.CalculateHealth(kills, deaths);
+            var myTeamCount = player.Team == CsTeam.Terrorist ? tCount : ctCount;
+            var opponentCount = player.Team == CsTeam.Terrorist ? ctCount : tCount;
+            var calculatedHealth = HealthCalculator.CalculateHealth(kills, deaths, myTeamCount, opponentCount);
 
             var pawn = player.PlayerPawn.Value;
             if (pawn == null) continue;
