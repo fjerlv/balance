@@ -25,14 +25,16 @@ public static class HealthCalculator
 public class Balance : BasePlugin
 {
     public override string ModuleName => "Balance";
-    public override string ModuleVersion => "0.0.5";
+    public override string ModuleVersion => "0.0.6";
 
     private readonly Dictionary<ulong, int> _playerKills = new();
     private readonly Dictionary<ulong, int> _playerDeaths = new();
+    private ConVar? _maxRoundsConVar;
 
     public override void Load(bool hotReload)
     {
         Console.WriteLine("Balance plugin loaded!");
+        _maxRoundsConVar = ConVar.Find("mp_maxrounds");
         RegisterEventHandler<EventRoundStart>(OnRoundStart);
         RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
         RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
@@ -120,7 +122,7 @@ public class Balance : BasePlugin
         return HookResult.Continue;
     }
 
-    private static bool IsPistolRound()
+    private bool IsPistolRound()
     {
         var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules")
             .FirstOrDefault()?.GameRules;
@@ -128,7 +130,7 @@ public class Balance : BasePlugin
         if (gameRules == null) return false;
 
         var totalRoundsPlayed = gameRules.TotalRoundsPlayed;
-        var maxRounds = ConVar.Find("mp_maxrounds")?.GetPrimitiveValue<int>() ?? 24;
+        var maxRounds = _maxRoundsConVar?.GetPrimitiveValue<int>() ?? 24;
         var halfTimeRound = maxRounds / 2;
 
         return totalRoundsPlayed == 0 || totalRoundsPlayed == halfTimeRound;

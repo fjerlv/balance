@@ -24,7 +24,7 @@ Tests are located in `Balance.Tests/` and use xUnit. New tests should be added f
 When making a commit, increment `ModuleVersion` in `Balance.cs` (line 27):
 
 ```csharp
-public override string ModuleVersion => "0.0.5";
+public override string ModuleVersion => "0.0.6";
 ```
 
 Use semantic versioning (MAJOR.MINOR.PATCH). Increment the patch version for small changes.

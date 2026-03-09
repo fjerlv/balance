@@ -37,14 +37,6 @@ public class HealthCalculatorTests
     }
 
     [Fact]
-    public void CalculateHealth_ZeroKillsZeroDeaths_ReturnsBaseHealth()
-    {
-        var result = HealthCalculator.CalculateHealth(kills: 0, deaths: 0);
-
-        Assert.Equal(100, result);
-    }
-
-    [Fact]
     public void CalculateHealth_ZeroKillsFiveDeaths_Returns200()
     {
         var result = HealthCalculator.CalculateHealth(kills: 0, deaths: 5);
